@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Project-specific ignore
+exploratory.ipynb
+data/*.xlsx
+data/population*.csv
