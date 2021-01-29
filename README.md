@@ -11,7 +11,7 @@ You will be able to:
 * Practice reading serialized data from files into Python objects
 * Practice extracting information from a nested data structure
 * Practice filtering records
-* Practice cleaning data (normalizing locations, stripping whitespace)
+* Practice cleaning data (normalizing locations)
 * Combine data from multiple sources into a single data structure
 * Use descriptive statistics and data visualizations to present your findings
 
@@ -55,7 +55,7 @@ Create an alphabetically-sorted list of teams who competed in the 2018 FIFA Worl
 
 Create a data structure that connects a team name (country name) to its performance in the 2018 FIFA World Cup. We'll use the count of games won in the entire tournament (group stage as well as knockout stage) to represent the performance.
 
-Also, create visualizations to help the reader understand the distribution of games won and the performance of each team.
+This will help create visualizations to help the reader understand the distribution of games won and the performance of each team.
 
 #### 3. Associating Countries with 2018 Population
 
@@ -69,7 +69,7 @@ Choose an appropriate statistical measure to analyze the relationship between po
 
 Before moving on to the next step, pause and think about the strategy for this analysis.
 
-First, what is our **unit of analysis**? In other words, what will one record in our final data structure represent?
+First, what is our **unit of analysis**, and what is the **unique identifier**? In other words, what will one record in our final data structure represent, and what attribute uniquely describes it?
 
 .
 
@@ -77,7 +77,7 @@ First, what is our **unit of analysis**? In other words, what will one record in
 
 .
 
-*Answer: Our unit of analysis is a* ***country***
+*Answer: Our unit of analysis is a* ***country*** *and the unique identifier we'll use is the* ***country name***
 
 Next, what **features** are we analyzing? In other words, what attributes of each country are we interested in?
 
@@ -88,12 +88,6 @@ Next, what **features** are we analyzing? In other words, what attributes of eac
 .
 
 *Answer: Our features are* ***2018 population*** *and* ***count of wins in the 2018 World Cup***
-
-.
-
-.
-
-.
 
 Finally, which dataset should we **start** with? In this case, any record with missing data is not useful to us, so we want to start with the smaller dataset.
 
@@ -180,7 +174,7 @@ assert type(population_data[0]) == dict or type(population_data[0]) == OrderedDi
 
 ## 1. List of Teams in 2018 World Cup
 
-> Create a variable `teams` that is a sorted list of the unique teams that competed in the 2018 World Cup.
+> Create an alphabetically-sorted list of teams who competed in the 2018 FIFA World Cup.
 
 This will take several steps, some of which have been completed for you.
 
@@ -463,3 +457,271 @@ assert type(teams[0]) == str
 ```
 
 Great, step 1 complete! We have unique identifiers (names) for each of our records (countries) that we will be able to use to connect 2018 World Cup performance to 2018 population.
+
+## 2. Associating Countries with 2018 World Cup Performance
+
+> Create a data structure that connects a team name (country name) to its performance in the 2018 FIFA World Cup. We'll use the count of games won in the entire tournament (group stage as well as knockout stage) to represent the performance.
+
+> Also, create visualizations to help the reader understand the distribution of games won and the performance of each team.
+
+So, we are building a **data structure** that connects a country name to the number of wins. There is no universal correct format for a data structure with this purpose, but we are going to use a format that resembles the "dataframe" format that will be introduced later in the course.
+
+Specifically, we'll build a **dictionary** where each key is the name of a country, and each value is a nested dictionary containing information about the number of wins and the 2018 population.
+
+The final result will look something like this:
+```
+{
+  'Argentina': { 'wins': 1, 'population': 44494502 },
+  ...
+  'Uruguay':   { 'wins': 4, 'population': 3449299  }
+}
+```
+
+For the current step (step 2), we'll build a data structure that looks something like this:
+```
+{
+  'Argentina': { 'wins': 1 },
+  ...
+  'Uruguay':   { 'wins': 4 }
+}
+```
+
+### Initializing with Wins Set to Zero
+
+Start by initializing a dictionary called `combined_data` containing:
+
+* Keys: the strings from `teams`
+* Values: each value the same, a dictionary containing the key `'wins'` with the associated value `0`. However, note that each value should be a distinct dictionary object in memory, not the same dictionary linked as a value in multiple places.
+
+Initially `combined_data` will look something like this:
+```
+{
+  'Argentina': { 'wins': 0 },
+  ...
+  'Uruguay':   { 'wins': 0 }
+}
+```
+
+
+```python
+# There are a couple different ways you could do this
+
+# Basic:
+# (Make an empty dictionary, loop over all of the
+# teams, adding the team as the key and the appropriate
+# dictionary as the value)
+combined_data = {}
+for team in teams:
+    combined_data[team] = {"wins": 0}
+    
+# Dictionary comprehension:
+# (This is preferable once you're familiar with the
+# syntax, but don't worry too much about using this
+# vs. the previous answer)
+combined_data = {team: {"wins": 0} for team in teams}
+
+# Note that this from_keys technique is incorrect, since it
+# will have the same dict as the value for every country,
+# i.e. if you add 1 to Argentina's wins, it also adds 1
+# to every other country's wins
+# combined_data = dict.fromkeys(teams, dict([("wins", 0)]))
+```
+
+Check that the `assert`s pass.
+
+
+```python
+
+# combined_data should be a dictionary
+assert type(combined_data) == dict
+
+# the keys should be strings
+assert type(list(combined_data.keys())[0]) == str
+
+# the values should be dictionaries
+assert combined_data["Japan"] == {"wins": 0}
+```
+
+### Adding Wins from Matches
+
+Now it's time to revisit the `matches` list from earlier, in order to associate a team with the number of times it has won a match.
+
+This time, let's write some functions to help organize our logic.
+
+Write a function `find_winner` that takes in a `match` dictionary, and returns the name of the team that won the match.  Recall that a match is structured like this:
+
+```
+{
+  'num': 1,
+  'date': '2018-06-14',
+  'time': '18:00',
+  'team1': { 'name': 'Russia',       'code': 'RUS' },
+  'team2': { 'name': 'Saudi Arabia', 'code': 'KSA' },
+  'score1': 5,
+  'score2': 0,
+  'score1i': 2,
+  'score2i': 0,
+  'goals1': [
+    { 'name': 'Gazinsky',  'minute': 12, 'score1': 1, 'score2': 0 },
+    { 'name': 'Cheryshev', 'minute': 43, 'score1': 2, 'score2': 0 },
+    { 'name': 'Dzyuba',    'minute': 71, 'score1': 3, 'score2': 0 },
+    { 'name': 'Cheryshev', 'minute': 90, 'offset': 1, 'score1': 4, 'score2': 0 },
+    { 'name': 'Golovin',   'minute': 90, 'offset': 4, 'score1': 5, 'score2': 0 }
+  ],
+  'goals2': [],
+  'group': 'Group A',
+  'stadium': { 'key': 'luzhniki', 'name': 'Luzhniki Stadium' },
+  'city': 'Moscow',
+  'timezone': 'UTC+3'
+}
+```
+
+The winner is determined by comparing the values associated with the `'score1'` and `'score2'` keys. If score 1 is larger, then the name associated with the `'team1'` key is the winner. If score 2 is larger, then the name associated with the `'team2'` key is the winner. If the values are the same, there is no winner, so return `None`. (Unlike the group round of the World Cup, we are only counting *wins* as our "performance" construct, not 3 points for a win and 1 point for a tie.)
+
+
+```python
+
+def find_winner(match):
+    """
+    Given a dictionary containing information about a match,
+    return the name of the winner (or None in the case of a tie)
+    """
+    score_1 = match["score1"]
+    score_2 = match["score2"]
+    
+    if score_1 > score_2:
+        return match["team1"]["name"]
+    elif score_2 > score_1:
+        return match["team2"]["name"]
+    else:
+        return None
+    # ^ this else: return None is not actually necessary since
+    # Python returns None if nothing is returned
+```
+
+
+```python
+assert find_winner(matches[0]) == "Russia"
+assert find_winner(matches[1]) == "Uruguay"
+assert find_winner(matches[2]) == None
+```
+
+Now that we have this helper function, loop over every match in `matches`, find the winner, and add 1 to the associated count of wins in `combined_data`. If the winner is `None`, skip adding it to the dictionary.
+
+
+```python
+
+for match in matches:
+    # Get the name of the winner
+    winner = find_winner(match)
+    # Only proceed to the next step if there was
+    # a winner
+    if winner:
+        # Add 1 to the associated count of wins
+        combined_data[winner]["wins"] += 1
+        
+# Visually inspect the output to ensure the wins are
+# different for different countries
+combined_data
+```
+
+
+
+
+    {'Argentina': {'wins': 1},
+     'Australia': {'wins': 0},
+     'Belgium': {'wins': 6},
+     'Brazil': {'wins': 3},
+     'Colombia': {'wins': 2},
+     'Costa Rica': {'wins': 0},
+     'Croatia': {'wins': 3},
+     'Denmark': {'wins': 1},
+     'Egypt': {'wins': 0},
+     'England': {'wins': 3},
+     'France': {'wins': 6},
+     'Germany': {'wins': 1},
+     'Iceland': {'wins': 0},
+     'Iran': {'wins': 1},
+     'Japan': {'wins': 1},
+     'Mexico': {'wins': 2},
+     'Morocco': {'wins': 0},
+     'Nigeria': {'wins': 1},
+     'Panama': {'wins': 0},
+     'Peru': {'wins': 1},
+     'Poland': {'wins': 1},
+     'Portugal': {'wins': 1},
+     'Russia': {'wins': 2},
+     'Saudi Arabia': {'wins': 1},
+     'Senegal': {'wins': 1},
+     'Serbia': {'wins': 1},
+     'South Korea': {'wins': 1},
+     'Spain': {'wins': 1},
+     'Sweden': {'wins': 3},
+     'Switzerland': {'wins': 1},
+     'Tunisia': {'wins': 1},
+     'Uruguay': {'wins': 4}}
+
+
+
+### Analysis of Wins
+
+While we could try to understand all 32 of those numbers just by scanning through them, let's use some descriptive statistics and data visualizations instead!
+
+#### Statistical Summary of Wins
+
+The code below calculates the mean, median, and standard deviation of the number of wins. If it doesn't work, that is an indication that something went wrong with the creation of the `combined_data` variable, and you might want to look at the solution branch and fix your code before proceeding.
+
+
+```python
+import numpy as np
+
+wins = [val["wins"] for val in combined_data.values()]
+
+print("Mean number of wins:", np.mean(wins))
+print("Median number of wins:", np.median(wins))
+print("Standard deviation of number of wins:", np.std(wins))
+```
+
+    Mean number of wins: 1.5625
+    Median number of wins: 1.0
+    Standard deviation of number of wins: 1.5194057226429023
+
+
+#### Visualizations of Wins
+
+In addition to those numbers, let's make a histogram (showing the distributions of the number of wins) and a bar graph (showing the number of wins by country).
+
+
+```python
+import matplotlib.pyplot as plt
+
+# Set up figure and axes
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(12, 7))
+fig.set_tight_layout(True)
+
+# Histogram of Wins and Frequencies
+ax1.hist(x=wins, bins=range(8), align="left", color="green")
+ax1.set_xticks(range(7))
+ax1.set_xlabel("Wins in 2018 World Cup")
+ax1.set_ylabel("Frequency")
+ax1.set_title("Distribution of Wins")
+
+# Horizontal Bar Graph of Wins by Country
+ax2.barh(teams[::-1], wins[::-1], color="green")
+ax2.set_xlabel("Wins in 2018 World Cup")
+ax2.set_title("Wins by Country");
+```
+
+
+![png](index_files/index_47_0.png)
+
+
+#### Interpretation of Win Analysis
+
+Before we move to looking at the relationship between wins and population, it's useful to understand the distribution of wins alone. A few notes of interpretation:
+
+* The number of wins is skewed and looks like a [negative binomial distribution](https://en.wikipedia.org/wiki/Negative_binomial_distribution), which makes sense conceptually
+* The "typical" value here is 1 (both the median and the highest point of the histogram), meaning a typical team that qualifies for the World Cup wins once
+* There are a few teams we might consider outliers: Belgium and France, with 6x the wins of the "typical" team and 1.5x the wins of the next "runner-up" (Uruguay, with 4 wins)
+* This is a fairly small dataset, something that becomes more noticeable with such a "spiky" (not smooth) histogram
+
