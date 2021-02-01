@@ -8,12 +8,11 @@ Now that you have learned about CSV and JSON file formats individually, it's tim
 
 You will be able to:
 
-* Practice reading serialized data from files into Python objects
-* Practice extracting information from a nested data structure
-* Practice filtering records
-* Practice cleaning data (normalizing locations)
+* Practice reading serialized JSON and CSV data from files into Python objects
+* Practice extracting information from nested data structures
+* Practice cleaning data (filtering, normalizing locations, converting types)
 * Combine data from multiple sources into a single data structure
-* Use descriptive statistics and data visualizations to present your findings
+* Interpret descriptive statistics and data visualizations to present your findings
 
 ## Your Task: Analyze the Relationship between Population and World Cup Performance
 
@@ -22,6 +21,8 @@ You will be able to:
 <span>Photo by <a href="https://unsplash.com/@fznsr_?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Fauzan Saari</a> on <a href="https://unsplash.com/s/photos/soccer-world-cup?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
 ### Business Understanding
+
+#### What is the relationship between the population of a country and their performance in the 2018 FIFA World Cup?
 
 Intuitively, we might assume that countries with larger populations would have better performance in international sports competitions. While this has been demonstrated to be [true for the Olympics](https://www.researchgate.net/publication/308513557_Medals_at_the_Olympic_Games_The_Relationship_Between_Won_Medals_Gross_Domestic_Product_Population_Size_and_the_Weight_of_Sportive_Practice), the results for the FIFA World Cup are more mixed:
 
@@ -69,6 +70,12 @@ Choose an appropriate statistical measure to analyze the relationship between po
 
 Before moving on to the next step, pause and think about the strategy for this analysis.
 
+Remember, our business question is:
+
+> What is the relationship between the population of a country and their performance in the 2018 FIFA World Cup?
+
+#### Unit of Analysis
+
 First, what is our **unit of analysis**, and what is the **unique identifier**? In other words, what will one record in our final data structure represent, and what attribute uniquely describes it?
 
 .
@@ -77,7 +84,13 @@ First, what is our **unit of analysis**, and what is the **unique identifier**? 
 
 .
 
-*Answer: Our unit of analysis is a* ***country*** *and the unique identifier we'll use is the* ***country name***
+*Answer:* 
+
+> What is the relationship between the population of a **country** and their performance in the 2018 FIFA World Cup?
+
+*Our unit of analysis is a* ***country*** *and the unique identifier we'll use is the* ***country name***
+
+#### Features
 
 Next, what **features** are we analyzing? In other words, what attributes of each country are we interested in?
 
@@ -87,7 +100,13 @@ Next, what **features** are we analyzing? In other words, what attributes of eac
 
 .
 
-*Answer: Our features are* ***2018 population*** *and* ***count of wins in the 2018 World Cup***
+*Answer:* 
+
+> What is the relationship between the **population** of a country and their **performance in the 2018 FIFA World Cup**?
+
+*Our features are* ***2018 population*** *and* ***count of wins in the 2018 World Cup***
+
+#### Dataset to Start With
 
 Finally, which dataset should we **start** with? In this case, any record with missing data is not useful to us, so we want to start with the smaller dataset.
 
@@ -240,6 +259,8 @@ assert type(population_data[0]) == dict or type(population_data[0]) == OrderedDi
 > Create an alphabetically-sorted list of teams who competed in the 2018 FIFA World Cup.
 
 This will take several steps, some of which have been completed for you.
+
+### Exploring the Structure of the World Cup Data JSON
 
 Let's start by exploring the structure of `world_cup_data`. Here is a pretty-printed preview of its contents:
 
@@ -986,7 +1007,808 @@ Before we move to looking at the relationship between wins and population, it's 
 * This is a fairly small dataset, something that becomes more noticeable with such a "spiky" (not smooth) histogram
 
 
+## 3. Associating Countries with 2018 Population
+
+> Add to the existing data structure so that it also connects each country name to its 2018 population, and create visualizations comparable to those from step 2.
+
+Now we're ready to add the 2018 population to `combined_data`, finally using the CSV file!
+
+Recall that `combined_data` currently looks something like this:
+```
+{
+  'Argentina': { 'wins': 1 },
+  ...
+  'Uruguay':   { 'wins': 4 }
+}
+```
+
+And the goal is for it to look something like this:
+```
+{
+  'Argentina': { 'wins': 1, 'population': 44494502 },
+  ...
+  'Uruguay':   { 'wins': 4, 'population': 3449299  }
+}
+```
+
+To do that, we need to extract the 2018 population information from the CSV data.
+
+### Exploring the Structure of the Population Data CSV
+
+Recall that previously we loaded information from a CSV containing population data into a list of dictionaries called `population_data`.
+
 
 ```python
-
+# Run this cell without changes
+len(population_data)
 ```
+
+
+```python
+# __SOLUTION__
+len(population_data)
+```
+
+
+
+
+    12695
+
+
+
+12,695 is a very large number of rows to print out, so let's look at some samples instead.
+
+
+```python
+# Run this cell without changes
+np.random.seed(42)
+population_record_samples = np.random.choice(population_data, size=10)
+population_record_samples
+```
+
+
+```python
+# __SOLUTION__
+np.random.seed(42)
+population_record_samples = np.random.choice(population_data, size=10)
+population_record_samples
+```
+
+
+
+
+    array([{'': '9984', 'Country Name': 'Malta', 'Country Code': 'MLT', 'Year': '1983', 'Value': '330524'},
+           {'': '3574', 'Country Name': 'Bahrain', 'Country Code': 'BHR', 'Year': '1994', 'Value': '549583'},
+           {'': '8104', 'Country Name': 'Iran, Islamic Rep.', 'Country Code': 'IRN', 'Year': '1988', 'Value': '53077313'},
+           {'': '7905', 'Country Name': 'Iceland', 'Country Code': 'ISL', 'Year': '1966', 'Value': '195570'},
+           {'': '14678', 'Country Name': 'United Arab Emirates', 'Country Code': 'ARE', 'Year': '1966', 'Value': '159976'},
+           {'': '13998', 'Country Name': 'Thailand', 'Country Code': 'THA', 'Year': '1994', 'Value': '58875269'},
+           {'': '8448', 'Country Name': 'Jamaica', 'Country Code': 'JAM', 'Year': '1978', 'Value': '2105907'},
+           {'': '8979', 'Country Name': 'Kuwait', 'Country Code': 'KWT', 'Year': '1978', 'Value': '1224067'},
+           {'': '3180', 'Country Name': 'Argentina', 'Country Code': 'ARG', 'Year': '2013', 'Value': '42202935'},
+           {'': '7140', 'Country Name': 'Gibraltar', 'Country Code': 'GIB', 'Year': '1968', 'Value': '27685'}],
+          dtype=object)
+
+
+
+There are **2 filtering tasks**, **1 data normalization task**, and **1 type conversion task** to be completed, based on what we can see in this sample. We'll walk through each of them below.
+
+(In a more realistic data cleaning environment, you most likely won't happen to get a sample that demonstrates all of the data cleaning steps needed, but this sample was chosen carefully for example purposes.)
+
+### Filtering Population Data
+
+We already should have suspected that this dataset would require some filtering, since there are 32 records in our current `combined_data` dataset and 12,695 records in `population_data`. Now that we have looked at this sample, we can identify 2 features we'll want to use in order to filter down the `population_data` records to just 32. Try to identify them before looking at the answer below.
+
+.
+
+.
+
+.
+
+*Answer: the two features to filter on are* ***`'Country Name'`*** *and* ***`'Year'`***. *We can see from the sample above that there are countries in `population_data` that are not present in `combined_data` (e.g. Malta) and there are years present that are not 2018.*
+
+In the cell below, create a new variable `population_data_filtered` that only includes relevant records from `population_data`. Relevant records are records where the country name is one of the countries in the `teams` list, and the year is "2018".
+
+(It's okay to leave 2018 as a string since we are not performing any math operations on it, just make sure you check for `"2018"` and not `2018`.)
+
+
+```python
+# Replace None with appropriate code
+
+population_data_filtered = []
+
+for record in population_data:
+    # Add record to population_data_filtered if relevant
+    None
+    
+len(population_data_filtered) # 27
+```
+
+
+```python
+# __SOLUTION__
+
+population_data_filtered = []
+
+for record in population_data:
+    # Add record to population_data_filtered if relevant
+    if (record["Country Name"] in teams) and (record["Year"] == "2018"):
+        population_data_filtered.append(record)
+    
+len(population_data_filtered)
+```
+
+
+
+
+    27
+
+
+
+Hmm...what went wrong? Why do we only have 27 records, and not 32?
+
+Did we really get a dataset with 12k records that's missing 5 of the data points we need?
+
+Let's take a closer look at the population data samples again, specifically the third one:
+
+
+```python
+# Run this cell without changes
+population_record_samples[2]
+```
+
+
+```python
+# __SOLUTION__
+population_record_samples[2]
+```
+
+
+
+
+    {'': '8104',
+     'Country Name': 'Iran, Islamic Rep.',
+     'Country Code': 'IRN',
+     'Year': '1988',
+     'Value': '53077313'}
+
+
+
+And compare that with the value for Iran in `teams`:
+
+
+```python
+# Run this cell without changes
+teams[13]
+```
+
+
+```python
+# __SOLUTION__
+teams[13]
+```
+
+
+
+
+    'Iran'
+
+
+
+Ohhhh...we have a data normalization issue! One dataset refers to this country as `'Iran, Islamic Rep.'`, while the other refers to it as `'Iran'`. This is a common issue we face when using data about countries and regions, where there is no universally-accepted naming convention.
+
+### Normalizing Locations in Population Data
+
+Sometimes data normalization can be a very, very time-consuming task where you need to find "crosswalk" data that can link the two formats together, or you need to write advanced regex formulas to line everything up.
+
+For this task, there are only 5 missing, so we'll just go ahead and give you a function that makes the appropriate substitutions.
+
+
+```python
+# Run this cell without changes
+def normalize_location(country_name):
+    """
+    Given a country name, return the name that the
+    country uses when playing in the FIFA World Cup
+    """
+    name_sub_dict = {
+        "Russian Federation": "Russia",
+        "Egypt, Arab Rep.": "Egypt",
+        "Iran, Islamic Rep.": "Iran",
+        "Korea, Rep.": "South Korea",
+        "United Kingdom": "England"
+    }
+    # The .get method returns the corresponding value from
+    # the dict if present, otherwise returns country_name
+    return name_sub_dict.get(country_name, country_name)
+
+# Example where normalized location is different
+print(normalize_location("Russian Federation"))
+# Example where normalized location is the same
+print(normalize_location("Argentina"))
+```
+
+
+```python
+# __SOLUTION__
+def normalize_location(country_name):
+    """
+    Given a country name, return the name that the
+    country uses when playing in the FIFA World Cup
+    """
+    name_sub_dict = {
+        "Russian Federation": "Russia",
+        "Egypt, Arab Rep.": "Egypt",
+        "Iran, Islamic Rep.": "Iran",
+        "Korea, Rep.": "South Korea",
+        "United Kingdom": "England"
+    }
+    # The .get method returns the corresponding value from
+    # the dict if present, otherwise returns country_name
+    return name_sub_dict.get(country_name, country_name)
+
+# Example where normalized location is different
+print(normalize_location("Russian Federation"))
+# Example where normalized location is the same
+print(normalize_location("Argentina"))
+```
+
+    Russia
+    Argentina
+
+
+Now, write new code to create `population_data_filtered` with normalized country names.
+
+
+```python
+# Replace None with appropriate code
+
+population_data_filtered = []
+
+for record in population_data:
+    # Get normalized country name
+    None
+    # Add record to population_data_filtered if relevant
+    if None:
+        # Replace the country name in the record
+        None
+        # Append to list
+        None
+        
+len(population_data_filtered) # 32
+```
+
+
+```python
+# __SOLUTION__
+
+population_data_filtered = []
+
+for record in population_data:
+    # Get normalized country name
+    normalized_name = normalize_location(record["Country Name"])
+    # Add record to population_data_filtered if relevant
+    if (normalized_name in teams) and (record["Year"] == "2018"):
+        # Replace the country name in the record
+        record["Country Name"] = normalized_name
+        # Append to list
+        population_data_filtered.append(record)
+    
+len(population_data_filtered)
+```
+
+
+
+
+    32
+
+
+
+Great, now we should have 32 records instead of 27!
+
+### Type Conversion of Population Data
+
+We need to do one more thing before we'll have population data that is usable for analysis. Take a look at this record from `population_data_filtered` to see if you can spot it:
+
+
+```python
+# Run this cell without changes
+population_data_filtered[0]
+```
+
+
+```python
+# __SOLUTION__
+population_data_filtered[0]
+```
+
+
+
+
+    {'': '3185',
+     'Country Name': 'Argentina',
+     'Country Code': 'ARG',
+     'Year': '2018',
+     'Value': '44494502'}
+
+
+
+Every key has the same data type (`str`), including the population value. In this example, it's `'44494502'`, when it needs to be `44494502` if we want to be able to compute statistics with it.
+
+In the cell below, loop over `population_data_filtered` and convert the data type of the value associated with the `"Value"` key from a string to an integer, using the built-in `int()` function.
+
+
+```python
+# Replace None with appropriate code
+for record in population_data_filtered:
+    # Convert the population value from str to int
+    None
+    
+# Look at the last record to make sure the population
+# value is an int
+population_data_filtered[-1]
+```
+
+
+```python
+# __SOLUTION__
+for record in population_data_filtered:
+    # Convert the population value from str to int
+    record["Value"] = int(record["Value"])
+    
+# Look at the last record to make sure the population
+# value is an int
+population_data_filtered[-1]
+```
+
+
+
+
+    {'': '14907',
+     'Country Name': 'Uruguay',
+     'Country Code': 'URY',
+     'Year': '2018',
+     'Value': 3449299}
+
+
+
+Check that it worked with the assert statement below:
+
+
+```python
+# Run this cell without changes
+assert type(population_data_filtered[-1]["Value"]) == int
+```
+
+
+```python
+# __SOLUTION__
+assert type(population_data_filtered[-1]["Value"]) == int
+```
+
+### Adding Population Data
+
+Now it's time to add the population data to `combined_data`! Recall that the data structure currently looks like this:
+
+
+```python
+# Run this cell without changes
+combined_data
+```
+
+
+```python
+# __SOLUTION__
+combined_data
+```
+
+
+
+
+    {'Argentina': {'wins': 1},
+     'Australia': {'wins': 0},
+     'Belgium': {'wins': 6},
+     'Brazil': {'wins': 3},
+     'Colombia': {'wins': 2},
+     'Costa Rica': {'wins': 0},
+     'Croatia': {'wins': 3},
+     'Denmark': {'wins': 1},
+     'Egypt': {'wins': 0},
+     'England': {'wins': 3},
+     'France': {'wins': 6},
+     'Germany': {'wins': 1},
+     'Iceland': {'wins': 0},
+     'Iran': {'wins': 1},
+     'Japan': {'wins': 1},
+     'Mexico': {'wins': 2},
+     'Morocco': {'wins': 0},
+     'Nigeria': {'wins': 1},
+     'Panama': {'wins': 0},
+     'Peru': {'wins': 1},
+     'Poland': {'wins': 1},
+     'Portugal': {'wins': 1},
+     'Russia': {'wins': 2},
+     'Saudi Arabia': {'wins': 1},
+     'Senegal': {'wins': 1},
+     'Serbia': {'wins': 1},
+     'South Korea': {'wins': 1},
+     'Spain': {'wins': 1},
+     'Sweden': {'wins': 3},
+     'Switzerland': {'wins': 1},
+     'Tunisia': {'wins': 1},
+     'Uruguay': {'wins': 4}}
+
+
+
+The goal is for it to be structured like this:
+```
+{
+  'Argentina': { 'wins': 1, 'population': 44494502 },
+  ...
+  'Uruguay':   { 'wins': 4, 'population': 3449299  }
+}
+```
+
+In the cell below, loop over `population_data_filtered` and add information about population to each country in `combined_data`:
+
+
+```python
+# Replace None with appropriate code
+for record in population_data_filtered:
+    # Extract the country name from the record
+    country = None
+    # Extract the population value from the record
+    population = None
+    # Add this information to combined_data
+    None
+    
+# Look combined_data
+combined_data
+```
+
+
+```python
+# __SOLUTION__
+for record in population_data_filtered:
+    # Extract the country name from the record
+    country = record["Country Name"]
+    # Extract the population value from the record
+    population = record["Value"]
+    # Add this information to combined_data
+    combined_data[country]["population"] = population
+    
+# Look combined_data
+combined_data
+```
+
+
+
+
+    {'Argentina': {'wins': 1, 'population': 44494502},
+     'Australia': {'wins': 0, 'population': 24982688},
+     'Belgium': {'wins': 6, 'population': 11433256},
+     'Brazil': {'wins': 3, 'population': 209469333},
+     'Colombia': {'wins': 2, 'population': 49648685},
+     'Costa Rica': {'wins': 0, 'population': 4999441},
+     'Croatia': {'wins': 3, 'population': 4087843},
+     'Denmark': {'wins': 1, 'population': 5793636},
+     'Egypt': {'wins': 0, 'population': 98423595},
+     'England': {'wins': 3, 'population': 66460344},
+     'France': {'wins': 6, 'population': 66977107},
+     'Germany': {'wins': 1, 'population': 82905782},
+     'Iceland': {'wins': 0, 'population': 352721},
+     'Iran': {'wins': 1, 'population': 81800269},
+     'Japan': {'wins': 1, 'population': 126529100},
+     'Mexico': {'wins': 2, 'population': 126190788},
+     'Morocco': {'wins': 0, 'population': 36029138},
+     'Nigeria': {'wins': 1, 'population': 195874740},
+     'Panama': {'wins': 0, 'population': 4176873},
+     'Peru': {'wins': 1, 'population': 31989256},
+     'Poland': {'wins': 1, 'population': 37974750},
+     'Portugal': {'wins': 1, 'population': 10283822},
+     'Russia': {'wins': 2, 'population': 144478050},
+     'Saudi Arabia': {'wins': 1, 'population': 33699947},
+     'Senegal': {'wins': 1, 'population': 15854360},
+     'Serbia': {'wins': 1, 'population': 6982604},
+     'South Korea': {'wins': 1, 'population': 51606633},
+     'Spain': {'wins': 1, 'population': 46796540},
+     'Sweden': {'wins': 3, 'population': 10175214},
+     'Switzerland': {'wins': 1, 'population': 8513227},
+     'Tunisia': {'wins': 1, 'population': 11565204},
+     'Uruguay': {'wins': 4, 'population': 3449299}}
+
+
+
+Check that the types are correct with these assert statements:
+
+
+```python
+# Run this cell without changes
+assert type(combined_data["Uruguay"]) == dict
+assert type(combined_data["Uruguay"]["population"]) == int
+```
+
+
+```python
+# __SOLUTION__
+assert type(combined_data["Uruguay"]) == dict
+assert type(combined_data["Uruguay"]["population"]) == int
+```
+
+### Analysis of Population
+
+Let's perform the same analysis for population that we performed for count of wins.
+
+#### Statistical Analysis of Population
+
+
+```python
+# Run this cell without changes
+populations = [val["population"] for val in combined_data.values()]
+
+print("Mean population:", np.mean(populations))
+print("Median population:", np.median(populations))
+print("Standard deviation of population:", np.std(populations))
+```
+
+
+```python
+# __SOLUTION__
+populations = [val["population"] for val in combined_data.values()]
+
+print("Mean population:", np.mean(populations))
+print("Median population:", np.median(populations))
+print("Standard deviation of population:", np.std(populations))
+```
+
+    Mean population: 51687460.84375
+    Median population: 34864542.5
+    Standard deviation of population: 55195121.60871871
+
+
+#### Visualizations of Population
+
+
+```python
+# Run this cell without changes
+
+# Set up figure and axes
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(12, 7))
+fig.set_tight_layout(True)
+
+# Histogram of Populations and Frequencies
+ax1.hist(x=populations, color="blue")
+ax1.set_xlabel("2018 Population")
+ax1.set_ylabel("Frequency")
+ax1.set_title("Distribution of Population")
+
+# Horizontal Bar Graph of Population by Country
+ax2.barh(teams[::-1], populations[::-1], color="blue")
+ax2.set_xlabel("2018 Population")
+ax2.set_title("Population by Country");
+```
+
+
+```python
+# __SOLUTION__
+
+# Set up figure and axes
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(12, 7))
+fig.set_tight_layout(True)
+
+# Histogram of Populations and Frequencies
+ax1.hist(x=populations, color="blue")
+ax1.set_xlabel("2018 Population")
+ax1.set_ylabel("Frequency")
+ax1.set_title("Distribution of Population")
+
+# Horizontal Bar Graph of Population by Country
+ax2.barh(teams[::-1], populations[::-1], color="blue")
+ax2.set_xlabel("2018 Population")
+ax2.set_title("Population by Country");
+```
+
+
+![png](index_files/index_115_0.png)
+
+
+#### Interpretation of Population Analysis
+
+* Similar to the distribution of the number of wins, the distribution of population is skewed.
+* It's hard to choose a single "typical" value here because there is so much variation.
+* The countries with the largest populations (Brazil, Nigeria, and Russia) do not overlap with the countries with the most wins (Belgium, France, and Uruguay)
+
+## 4. Analysis of Population vs. Performance
+
+> Choose an appropriate statistical measure to analyze the relationship between population and performance, and create a visualization representing this relationship.
+
+### Statistical Measure
+So far we have learned about only two statistics for understanding the *relationship* between variables: **covariance** and **correlation**. We will use correlation here, because that provides a more standardized, interpretable metric.
+
+
+```python
+# Run this cell without changes
+np.corrcoef(wins, populations)[0][1]
+```
+
+
+```python
+# __SOLUTION__
+np.corrcoef(wins, populations)[0][1]
+```
+
+
+
+
+    0.07592816849178588
+
+
+
+In the cell below, interpret this number. What direction is this correlation? Is it strong or weak?
+
+
+```python
+# Replace None with appropriate code
+"""
+None
+"""
+```
+
+
+```python
+# __SOLUTION__
+"""
+This is a very weak positive correlation. In other words, in
+general a higher population is associated with more wins, but
+this association is very weak, close to zero.
+"""
+```
+
+### Data Visualization
+
+A **scatter plot** is he most sensible form of data visualization for showing this relationship, because we have two dimensions of data, but there is no "increasing" variable (e.g. time) that would indicate we should use a line graph.
+
+
+```python
+# Run this cell without changes
+
+# Set up figure
+fig, ax = plt.subplots(figsize=(8, 5))
+
+# Basic scatter plot
+ax.scatter(
+    x=populations,
+    y=wins,
+    color="gray", alpha=0.5, s=100
+)
+ax.set_xlabel("2018 Population")
+ax.set_ylabel("2018 World Cup Wins")
+ax.set_title("Population vs. World Cup Wins")
+
+# Add annotations for specific points of interest
+highlighted_points = {
+    "Belgium": 2, # Numbers are the index of that
+    "Brazil": 3,  # country in populations & wins
+    "France": 10,
+    "Nigeria": 17
+}
+for country, index in highlighted_points.items():
+    # Get x and y position of data point
+    x = populations[index]
+    y = wins[index]
+    # Move each point slightly down and to the left
+    # (numbers were chosen by manually tweaking)
+    xtext = x - (1.25e6 * len(country))
+    ytext = y - 0.5
+    # Annotate with relevant arguments
+    ax.annotate(
+        text=country,
+        xy=(x, y),
+        xytext=(xtext, ytext)
+    )
+```
+
+
+```python
+# __SOLUTION__
+
+# Set up figure
+fig, ax = plt.subplots(figsize=(8, 5))
+
+# Basic scatter plot
+ax.scatter(
+    x=populations,
+    y=wins,
+    color="gray", alpha=0.5, s=100
+)
+ax.set_xlabel("2018 Population")
+ax.set_ylabel("2018 World Cup Wins")
+ax.set_title("Population vs. World Cup Wins")
+
+# Add annotations for specific points of interest
+highlighted_points = {
+    "Belgium": 2, # Numbers are the index of that
+    "Brazil": 3,  # country in populations & wins
+    "France": 10,
+    "Nigeria": 17
+}
+for country, index in highlighted_points.items():
+    # Get x and y position of data point
+    x = populations[index]
+    y = wins[index]
+    # Move each point slightly down and to the left
+    # (numbers were chosen by manually tweaking)
+    xtext = x - (1.25e6 * len(country))
+    ytext = y - 0.5
+    # Annotate with relevant arguments
+    ax.annotate(
+        text=country,
+        xy=(x, y),
+        xytext=(xtext, ytext)
+    )
+```
+
+
+![png](index_files/index_125_0.png)
+
+
+### Data Visualization Interpretation
+
+Interpret this plot in the cell below. Does this align with the findings from the statistical measure (correlation), as well as the map shown at the beginning of this lab (showing the best results by country)?
+
+
+```python
+# Replace None with appropriate text
+"""
+None
+"""
+```
+
+
+```python
+# __SOLUTION__
+"""
+This scatter plot does align with the findings from our
+correlation calculation. The data points in the scatter
+plot seem fairly randomly spread, and not grouped around
+a straight line (with either a positive or a negative slope).
+
+The annotations help us to see that the largest number of
+wins were from countries with relatively small populations,
+that the countries with the largest populations had relatively
+few wins, and that many of the countries involved had small
+populations as well as few wins.
+
+Overall, this aligns well with the map at the beginning of
+the lab, which shows both large and small countries with both
+strong and weak performance. One important thing to note is
+that our dataset was about the 2018 World Cup in particular,
+but this map includes more data, so we can see that Brazil
+(the largest country by population in the 2018 World Cup)
+has been the World Cup champion before, even though their
+performance was worse than Belgium's or France's in this
+particular tournament.
+
+Some further notes:
+- Remember that correlation is not causation. Even though we
+  detected a weak positive correlation, that is not saying
+  that increasing the population of a country would necessarily
+  improve their World Cup performance!
+- At the same time, we have not *disproven* this causal link.
+  In later lessons we will introduce additional statistical
+  methods for detecting relationships between variables, but
+  even then we won't be able to confirm that two variables are
+  unrelated, we'll only be able to provide evidence that they
+  are related (or fail to provide that evidence).
+"""
+```
+
+### Final Analysis
+
+> What is the relationship between the population of a country and their performance in the 2018 FIFA World Cup?
+
+Overall, we found a very weakly positive relationship between the population of a country and their performance in the 2018 FIFA World Cup, as demonstrated by both the correlation between populations and wins, and the scatter plot.
+
+## Summary
+
+Congratulations! That was a long lab, pulling together a lot of material. You read data into Python, extracted the relevant information, cleaned the data, and combined the data into a new format to be used in analysis. While we will continue to introduce new tools and techniques, these essential steps will be present for the rest of your data science projects from here on out!
