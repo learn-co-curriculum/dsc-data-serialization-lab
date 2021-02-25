@@ -953,6 +953,19 @@ None
 
 Overall, we found a very weakly positive relationship between the population of a country and their performance in the 2018 FIFA World Cup, as demonstrated by both the correlation between populations and wins, and the scatter plot.
 
+In the cell below, write down your thoughts on these questions:
+
+ - What are your thoughts on why you may see this result?
+ - What would you research next?
+
+
+```python
+# Replace None with appropriate text
+"""
+None
+"""
+```
+
 ## Summary
 
 Congratulations! That was a long lab, pulling together a lot of material. You read data into Python, extracted the relevant information, cleaned the data, and combined the data into a new format to be used in analysis. While we will continue to introduce new tools and techniques, these essential steps will be present for the rest of your data science projects from here on out!
