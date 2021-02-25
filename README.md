@@ -1658,9 +1658,10 @@ None
 ```python
 # __SOLUTION__
 """
-This is a very weak positive correlation. In other words, in
-general a higher population is associated with more wins, but
-this association is very weak, close to zero.
+This is a very weak positive correlation. In other words, while
+we have measured some positive association, we can't conclude that
+a higher population is truly associated with more wins in general
+because this value is so small.
 """
 ```
 
@@ -1808,6 +1809,19 @@ Some further notes:
 > What is the relationship between the population of a country and their performance in the 2018 FIFA World Cup?
 
 Overall, we found a very weakly positive relationship between the population of a country and their performance in the 2018 FIFA World Cup, as demonstrated by both the correlation between populations and wins, and the scatter plot.
+
+In the cell below, write down your thoughts on these questions:
+
+ - What are your thoughts on why you may see this result?
+ - What would you research next?
+
+
+```python
+# Replace None with appropriate text
+"""
+None
+"""
+```
 
 ## Summary
 
