@@ -141,14 +141,14 @@ Next, we open the relevant files.
 
 ```python
 # Run this cell without changes
-world_cup_file = open("data/world_cup_2018.json")
+world_cup_file = open("data/world_cup_2018.json", encoding='utf8')
 population_file = open("data/country_populations.csv")
 ```
 
 
 ```python
 # __SOLUTION__
-world_cup_file = open("data/world_cup_2018.json")
+world_cup_file = open("data/world_cup_2018.json", encoding='utf8')
 population_file = open("data/country_populations.csv")
 ```
 
