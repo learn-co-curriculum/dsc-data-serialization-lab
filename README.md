@@ -26,7 +26,7 @@ You will be able to:
 
 Intuitively, we might assume that countries with larger populations would have better performance in international sports competitions. While this has been demonstrated to be [true for the Olympics](https://www.researchgate.net/publication/308513557_Medals_at_the_Olympic_Games_The_Relationship_Between_Won_Medals_Gross_Domestic_Product_Population_Size_and_the_Weight_of_Sportive_Practice), the results for the FIFA World Cup are more mixed:
 
-<p><a href="https://commons.wikimedia.org/wiki/File:World_cup_countries_best_results_and_hosts.PNG#/media/File:World_cup_countries_best_results_and_hosts.PNG"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/World_cup_countries_best_results_and_hosts.PNG" alt="World cup countries best results and hosts.PNG" height="563" width="1280"></a><br><a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=578740">Link</a></p>
+<p><a href="https://web.archive.org/web/20230524202759/https://upload.wikimedia.org/wikipedia/commons/3/3c/World_cup_countries_best_results.png"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/World_cup_countries_best_results.png" alt="World cup countries best results and hosts.PNG" height="563" width="1280"></a><br><a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=578740">Link</a></p>
 
 In this analysis, we are going to look specifically at the sample of World Cup games in 2018 and the corresponding 2018 populations of the participating nations, to determine the relationship between population and World Cup performance for this year.
 
@@ -994,7 +994,9 @@ ax2.set_title("Wins by Country");
 ```
 
 
+    
 ![png](index_files/index_68_0.png)
+    
 
 
 #### Interpretation of Win Analysis
@@ -1609,7 +1611,9 @@ ax2.set_title("Population by Country");
 ```
 
 
+    
 ![png](index_files/index_115_0.png)
+    
 
 
 #### Interpretation of Population Analysis
@@ -1750,7 +1754,9 @@ for country, index in highlighted_points.items():
 ```
 
 
+    
 ![png](index_files/index_125_0.png)
+    
 
 
 ### Data Visualization Interpretation
