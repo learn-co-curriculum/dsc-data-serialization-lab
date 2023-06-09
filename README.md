@@ -141,14 +141,14 @@ Next, we open the relevant files.
 
 ```python
 # Run this cell without changes
-world_cup_file = open("data/world_cup_2018.json", encoding='utf8')
+world_cup_file = open("data/world_cup_2018.json", encoding="utf8")
 population_file = open("data/country_populations.csv")
 ```
 
 
 ```python
 # __SOLUTION__
-world_cup_file = open("data/world_cup_2018.json", encoding='utf8')
+world_cup_file = open("data/world_cup_2018.json", encoding="utf8")
 population_file = open("data/country_populations.csv")
 ```
 
@@ -186,7 +186,7 @@ Make sure the `assert` passes, ensuring that `world_cup_data` has the correct ty
 assert type(world_cup_data) == dict
 
 # Check that the dictionary has 2 keys, 'name' and 'rounds'
-assert list(world_cup_data.keys()) == ['name', 'rounds']
+assert list(world_cup_data.keys()) == ["name", "rounds"]
 ```
 
 
@@ -197,7 +197,7 @@ assert list(world_cup_data.keys()) == ['name', 'rounds']
 assert type(world_cup_data) == dict
 
 # Check that the dictionary has 2 keys, 'name' and 'rounds'
-assert list(world_cup_data.keys()) == ['name', 'rounds']
+assert list(world_cup_data.keys()) == ["name", "rounds"]
 ```
 
 ### Population Data
@@ -237,6 +237,7 @@ assert type(population_data) == list
 # (csv.DictReader interface differs slightly by Python version;
 # either a dict or an OrderedDict is fine here)
 from collections import OrderedDict
+
 assert type(population_data[0]) == dict or type(population_data[0]) == OrderedDict
 ```
 
@@ -251,6 +252,7 @@ assert type(population_data) == list
 # (csv.DictReader interface differs slightly by Python version;
 # either a dict or an OrderedDict is fine here)
 from collections import OrderedDict
+
 assert type(population_data[0]) == dict or type(population_data[0]) == OrderedDict
 ```
 
@@ -475,7 +477,7 @@ for round_ in rounds:
     round_matches = None
     # Add them to the overall list of matches
     None
-    
+
 matches[0]
 ```
 
@@ -490,7 +492,7 @@ for round_ in rounds:
     round_matches = round_["matches"]
     # Add them to the overall list of matches
     matches.extend(round_matches)
-    
+
 matches[0]
 ```
 
@@ -581,7 +583,7 @@ for match in matches:
     None
     # Add team2 name value to teams_set
     None
-    
+
 teams = sorted(list(teams_set))
 print(teams)
 ```
@@ -596,7 +598,7 @@ for match in matches:
     teams_set.add(match["team1"]["name"])
     # Add team2 value to teams_set
     teams_set.add(match["team2"]["name"])
-    
+
 teams = sorted(list(teams_set))
 print(teams)
 ```
@@ -702,7 +704,7 @@ None
 combined_data = {}
 for team in teams:
     combined_data[team] = {"wins": 0}
-    
+
 # Dictionary comprehension:
 # (This is preferable once you're familiar with the
 # syntax, but don't worry too much about using this
@@ -786,6 +788,7 @@ The winner is determined by comparing the values associated with the `'score1'` 
 ```python
 # Replace None with appropriate code
 
+
 def find_winner(match):
     """
     Given a dictionary containing information about a match,
@@ -798,6 +801,7 @@ def find_winner(match):
 ```python
 # __SOLUTION__
 
+
 def find_winner(match):
     """
     Given a dictionary containing information about a match,
@@ -805,7 +809,7 @@ def find_winner(match):
     """
     score_1 = match["score1"]
     score_2 = match["score2"]
-    
+
     if score_1 > score_2:
         return match["team1"]["name"]
     elif score_2 > score_1:
@@ -846,7 +850,7 @@ for match in matches:
     if winner:
         # Add 1 to the associated count of wins
         None
-        
+
 # Visually inspect the output to ensure the wins are
 # different for different countries
 combined_data
@@ -864,7 +868,7 @@ for match in matches:
     if winner:
         # Add 1 to the associated count of wins
         combined_data[winner]["wins"] += 1
-        
+
 # Visually inspect the output to ensure the wins are
 # different for different countries
 combined_data
@@ -1122,8 +1126,8 @@ population_data_filtered = []
 for record in population_data:
     # Add record to population_data_filtered if relevant
     None
-    
-len(population_data_filtered) # 27
+
+len(population_data_filtered)  # 27
 ```
 
 
@@ -1136,7 +1140,7 @@ for record in population_data:
     # Add record to population_data_filtered if relevant
     if (record["Country Name"] in teams) and (record["Year"] == "2018"):
         population_data_filtered.append(record)
-    
+
 len(population_data_filtered)
 ```
 
@@ -1218,11 +1222,12 @@ def normalize_location(country_name):
         "Egypt, Arab Rep.": "Egypt",
         "Iran, Islamic Rep.": "Iran",
         "Korea, Rep.": "South Korea",
-        "United Kingdom": "England"
+        "United Kingdom": "England",
     }
     # The .get method returns the corresponding value from
     # the dict if present, otherwise returns country_name
     return name_sub_dict.get(country_name, country_name)
+
 
 # Example where normalized location is different
 print(normalize_location("Russian Federation"))
@@ -1243,11 +1248,12 @@ def normalize_location(country_name):
         "Egypt, Arab Rep.": "Egypt",
         "Iran, Islamic Rep.": "Iran",
         "Korea, Rep.": "South Korea",
-        "United Kingdom": "England"
+        "United Kingdom": "England",
     }
     # The .get method returns the corresponding value from
     # the dict if present, otherwise returns country_name
     return name_sub_dict.get(country_name, country_name)
+
 
 # Example where normalized location is different
 print(normalize_location("Russian Federation"))
@@ -1276,8 +1282,8 @@ for record in population_data:
         None
         # Append to list
         None
-        
-len(population_data_filtered) # 32
+
+len(population_data_filtered)  # 32
 ```
 
 
@@ -1295,7 +1301,7 @@ for record in population_data:
         record["Country Name"] = normalized_name
         # Append to list
         population_data_filtered.append(record)
-    
+
 len(population_data_filtered)
 ```
 
@@ -1345,7 +1351,7 @@ In the cell below, loop over `population_data_filtered` and convert the data typ
 for record in population_data_filtered:
     # Convert the population value from str to int
     None
-    
+
 # Look at the last record to make sure the population
 # value is an int
 population_data_filtered[-1]
@@ -1357,7 +1363,7 @@ population_data_filtered[-1]
 for record in population_data_filtered:
     # Convert the population value from str to int
     record["Value"] = int(record["Value"])
-    
+
 # Look at the last record to make sure the population
 # value is an int
 population_data_filtered[-1]
@@ -1463,7 +1469,7 @@ for record in population_data_filtered:
     population = None
     # Add this information to combined_data
     None
-    
+
 # Look combined_data
 combined_data
 ```
@@ -1478,7 +1484,7 @@ for record in population_data_filtered:
     population = record["Value"]
     # Add this information to combined_data
     combined_data[country]["population"] = population
-    
+
 # Look combined_data
 combined_data
 ```
@@ -1681,21 +1687,17 @@ A **scatter plot** is he most sensible form of data visualization for showing th
 fig, ax = plt.subplots(figsize=(8, 5))
 
 # Basic scatter plot
-ax.scatter(
-    x=populations,
-    y=wins,
-    color="gray", alpha=0.5, s=100
-)
+ax.scatter(x=populations, y=wins, color="gray", alpha=0.5, s=100)
 ax.set_xlabel("2018 Population")
 ax.set_ylabel("2018 World Cup Wins")
 ax.set_title("Population vs. World Cup Wins")
 
 # Add annotations for specific points of interest
 highlighted_points = {
-    "Belgium": 2, # Numbers are the index of that
+    "Belgium": 2,  # Numbers are the index of that
     "Brazil": 3,  # country in populations & wins
     "France": 10,
-    "Nigeria": 17
+    "Nigeria": 17,
 }
 for country, index in highlighted_points.items():
     # Get x and y position of data point
@@ -1706,11 +1708,7 @@ for country, index in highlighted_points.items():
     xtext = x - (1.25e6 * len(country))
     ytext = y - 0.5
     # Annotate with relevant arguments
-    ax.annotate(
-        text=country,
-        xy=(x, y),
-        xytext=(xtext, ytext)
-    )
+    ax.annotate(text=country, xy=(x, y), xytext=(xtext, ytext))
 ```
 
 
@@ -1721,21 +1719,17 @@ for country, index in highlighted_points.items():
 fig, ax = plt.subplots(figsize=(8, 5))
 
 # Basic scatter plot
-ax.scatter(
-    x=populations,
-    y=wins,
-    color="gray", alpha=0.5, s=100
-)
+ax.scatter(x=populations, y=wins, color="gray", alpha=0.5, s=100)
 ax.set_xlabel("2018 Population")
 ax.set_ylabel("2018 World Cup Wins")
 ax.set_title("Population vs. World Cup Wins")
 
 # Add annotations for specific points of interest
 highlighted_points = {
-    "Belgium": 2, # Numbers are the index of that
+    "Belgium": 2,  # Numbers are the index of that
     "Brazil": 3,  # country in populations & wins
     "France": 10,
-    "Nigeria": 17
+    "Nigeria": 17,
 }
 for country, index in highlighted_points.items():
     # Get x and y position of data point
@@ -1746,11 +1740,7 @@ for country, index in highlighted_points.items():
     xtext = x - (1.25e6 * len(country))
     ytext = y - 0.5
     # Annotate with relevant arguments
-    ax.annotate(
-        text=country,
-        xy=(x, y),
-        xytext=(xtext, ytext)
-    )
+    ax.annotate(text=country, xy=(x, y), xytext=(xtext, ytext))
 ```
 
 
