@@ -16,7 +16,7 @@ You will be able to:
 
 ## Your Task: Analyze the Relationship between Population and World Cup Performance
 
-![Russia 2018 branded soccer ball and trophy](images/world_cup.jpg)
+![Russia 2018 branded soccer ball and trophy](https://curriculum-content.s3.amazonaws.com/data-science/images/world_cup.jpg)
 
 <span>Photo by <a href="https://unsplash.com/@fznsr_?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Fauzan Saari</a> on <a href="https://unsplash.com/s/photos/soccer-world-cup?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
