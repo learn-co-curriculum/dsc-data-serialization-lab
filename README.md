@@ -478,7 +478,7 @@ assert len(teams) == 32
 assert type(teams[0]) == str
 ```
 
-Great, step 1 complete! We have unique identifiers (names) for each of our records (countries) that we will be able to use to connect 2018 World Cup performance to 2018 population.
+Step 1 complete. We have unique identifiers (names) for each of our records (countries) that we will be able to use to connect 2018 World Cup performance to 2018 population.
 
 ## 2. Associating Countries with 2018 World Cup Performance
 
@@ -688,7 +688,7 @@ combined_data
 
 ### Analysis of Wins
 
-While we could try to understand all 32 of those numbers just by scanning through them, let's use some descriptive statistics and data visualizations instead!
+While we could try to understand all 32 of those numbers just by scanning through them, let's use some descriptive statistics and data visualizations instead
 
 #### Statistical Summary of Wins
 
@@ -755,7 +755,7 @@ Before we move to looking at the relationship between wins and population, it's 
 
 > Add to the existing data structure so that it also connects each country name to its 2018 population, and create visualizations comparable to those from step 2.
 
-Now we're ready to add the 2018 population to `combined_data`, finally using the CSV file!
+Now we're ready to add the 2018 population to `combined_data`, finally using the CSV file
 
 Recall that `combined_data` currently looks something like this:
 ```
@@ -895,7 +895,7 @@ teams[13]
 
 
 
-Ohhhh...we have a data normalization issue! One dataset refers to this country as `'Iran, Islamic Rep.'`, while the other refers to it as `'Iran'`. This is a common issue we face when using data about countries and regions, where there is no universally-accepted naming convention.
+Ohhhh...we have a data normalization issue. One dataset refers to this country as `'Iran, Islamic Rep.'`, while the other refers to it as `'Iran'`. This is a common issue we face when using data about countries and regions, where there is no universally-accepted naming convention.
 
 ### Normalizing Locations in Population Data
 
@@ -959,7 +959,7 @@ len(population_data_filtered)
 
 
 
-Great, now we should have 32 records instead of 27!
+Great, now we should have 32 records instead of 27.
 
 ### Type Conversion of Population Data
 
@@ -1016,7 +1016,7 @@ assert type(population_data_filtered[-1]["Value"]) == int
 
 ### Adding Population Data
 
-Now it's time to add the population data to `combined_data`! Recall that the data structure currently looks like this:
+Now it's time to add the population data to `combined_data`. Recall that the data structure currently looks like this:
 
 
 ```python
@@ -1289,7 +1289,7 @@ Some further notes:
 - Remember that correlation is not causation. Even though we
   detected a weak positive correlation, that is not saying
   that increasing the population of a country would necessarily
-  improve their World Cup performance!
+  improve their World Cup performance.
 - At the same time, we have not *disproven* this causal link.
   In later lessons we will introduce additional statistical
   methods for detecting relationships between variables, but
@@ -1312,4 +1312,4 @@ In the cell below, write down your thoughts on these questions:
 
 ## Summary
 
-Congratulations! That was a long lab, pulling together a lot of material. You read data into Python, extracted the relevant information, cleaned the data, and combined the data into a new format to be used in analysis. While we will continue to introduce new tools and techniques, these essential steps will be present for the rest of your data science projects from here on out!
+That was a long lab, pulling together a lot of material. You read data into Python, extracted the relevant information, cleaned the data, and combined the data into a new format to be used in analysis. While we will continue to introduce new tools and techniques, these essential steps will be present for the rest of your data science projects from here on out.
